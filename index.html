@@ -1,0 +1,608 @@
+<title>Тактика ПвП: Турнир</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #f6f3ee;
+    --surface: #ffffff;
+    --surface-2: #efeae2;
+    --text: #241f2e;
+    --text-muted: #6e6579;
+    --border: #e2dcd3;
+
+    --axe: #7c5cbf;
+    --axe-bg: #efe9fb;
+    --spear: #b9791e;
+    --spear-bg: #fbf0dc;
+    --hammer: #b1462f;
+    --hammer-bg: #fbe6e0;
+    --sword: #3f7a6c;
+    --sword-bg: #e4f1ec;
+    --knife: #2e6ea6;
+    --knife-bg: #e3edf6;
+    --club: #6d6a74;
+    --club-bg: #edecef;
+
+    --pos: #3f7a4f;
+    --neg: #b1462f;
+    --warn: #b9791e;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17141d;
+      --surface: #201c28;
+      --surface-2: #29242f;
+      --text: #ece7f2;
+      --text-muted: #a297b0;
+      --border: #37313f;
+
+      --axe: #b193e8;
+      --axe-bg: #322a49;
+      --spear: #e3ab54;
+      --spear-bg: #423419;
+      --hammer: #e2836a;
+      --hammer-bg: #402620;
+      --sword: #7dbcac;
+      --sword-bg: #223a34;
+      --knife: #7fb3e0;
+      --knife-bg: #1f3346;
+      --club: #b7b3c0;
+      --club-bg: #322e3a;
+
+      --pos: #77c98a;
+      --neg: #e2836a;
+      --warn: #e3ab54;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17141d;
+    --surface: #201c28;
+    --surface-2: #29242f;
+    --text: #ece7f2;
+    --text-muted: #a297b0;
+    --border: #37313f;
+
+    --axe: #b193e8;
+    --axe-bg: #322a49;
+    --spear: #e3ab54;
+    --spear-bg: #423419;
+    --hammer: #e2836a;
+    --hammer-bg: #402620;
+    --sword: #7dbcac;
+    --sword-bg: #223a34;
+    --knife: #7fb3e0;
+    --knife-bg: #1f3346;
+    --club: #b7b3c0;
+    --club-bg: #322e3a;
+
+    --pos: #77c98a;
+    --neg: #e2836a;
+    --warn: #e3ab54;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-inline: 20px;
+    padding-block: 40px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.5;
+  }
+
+  .wrap { max-width: 980px; margin: 0 auto; }
+
+  header { margin-bottom: 30px; }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(1.6rem, 4vw, 2.3rem);
+    letter-spacing: -0.01em;
+    margin: 0 0 8px;
+    text-wrap: balance;
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 0.98rem;
+    max-width: 68ch;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .note {
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: var(--surface-2);
+    border-radius: 8px;
+    font-size: 0.86rem;
+    color: var(--text-muted);
+    display: inline-block;
+  }
+
+  .note.warn {
+    background: var(--spear-bg);
+    color: var(--spear);
+  }
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin: 0 0 6px;
+    letter-spacing: -0.005em;
+  }
+
+  h2 .num {
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-right: 8px;
+  }
+
+  .section-sub {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    margin: 0 0 18px;
+    max-width: 70ch;
+  }
+
+  section { margin-bottom: 46px; }
+
+  nav.toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-bottom: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 6px 24px;
+  }
+
+  nav.toc a {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 4px 0;
+    border-bottom: 1px dotted transparent;
+  }
+  nav.toc a:hover { border-bottom-color: var(--text-muted); }
+  nav.toc .toc-title {
+    grid-column: 1 / -1;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .stat-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .stat-card .k {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .stat-card .v {
+    font-family: 'Fraunces', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+  .stat-card .v.axe { color: var(--axe); }
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--axe);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 0.92rem;
+    margin: 14px 0;
+  }
+  .callout.good { border-left-color: var(--pos); }
+  .callout.bad { border-left-color: var(--neg); }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout strong { color: var(--text); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 0.87rem;
+  }
+
+  .table-scroll { overflow-x: auto; border-radius: 12px; margin-bottom: 10px; }
+
+  th, td {
+    padding: 10px 13px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    font-weight: 600;
+    background: var(--surface-2);
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  td.num { text-align: right; white-space: nowrap; font-weight: 600; }
+  td.center { text-align: center; }
+
+  .class-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .class-name .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .class-name.axe .dot { background: var(--axe); }
+  .class-name.spear .dot { background: var(--spear); }
+  .class-name.hammer .dot { background: var(--hammer); }
+  .class-name.sword .dot { background: var(--sword); }
+  .class-name.knife .dot { background: var(--knife); }
+  .class-name.club .dot { background: var(--club); }
+
+  .pill {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 600;
+  }
+  .pill.axe { background: var(--axe-bg); color: var(--axe); }
+  .pill.spear { background: var(--spear-bg); color: var(--spear); }
+  .pill.hammer { background: var(--hammer-bg); color: var(--hammer); }
+  .pill.sword { background: var(--sword-bg); color: var(--sword); }
+  .pill.knife { background: var(--knife-bg); color: var(--knife); }
+  .pill.club { background: var(--club-bg); color: var(--club); }
+
+  .cycle-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 16px 0;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .cycle-strip .arrow { color: var(--text-muted); font-weight: 400; }
+
+  .matchup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+  }
+  .matchup-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .matchup-card h4 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+    font-family: 'Fraunces', serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .matchup-card p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+  .matchup-card .verdict {
+    display: inline-block;
+    margin-bottom: 8px;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+  }
+  .verdict.easy { color: var(--pos); }
+  .verdict.even { color: var(--warn); }
+  .verdict.hard { color: var(--neg); }
+
+  ol.steps, ul.checklist {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px 18px 42px;
+    font-size: 0.92rem;
+    line-height: 1.7;
+  }
+  ul.checklist { list-style: none; padding-left: 20px; }
+  ul.checklist li {
+    position: relative;
+    padding-left: 26px;
+    margin-bottom: 6px;
+  }
+  ul.checklist li::before {
+    content: "☐";
+    position: absolute;
+    left: 0;
+    color: var(--text-muted);
+  }
+
+  footer {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.6;
+    border-top: 1px solid var(--border);
+    padding-top: 18px;
+  }
+
+  .muted { color: var(--text-muted); }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <h1>Тактика ПвП против игроков: Рыцарский турнир</h1>
+    <p class="subtitle">План на турнир 23–26 сентября — под твою сборку: Топор, Крит 3592.84 / Антикрит 2828.73 / Уворот 418.65 / Антиуворот 1763.98, Инстинкт 133 / Ловкость 21 / Сила 34 / Интеллект 12.</p>
+    <div class="note warn">Один пункт не проверен вживую: точный ассортимент Турнирной лавки (Малые Торговые ряды) — сессия сбрасывала логин при попытке дойти туда. Сами правила турнирных рун (см. раздел 7) проверены по вики и актуальны. Скажи, когда лавка откроется на событии — зайду и посмотрю точный список.</div>
+  </header>
+
+  <nav class="toc">
+    <div class="toc-title">Содержание</div>
+    <a href="#profile">1. Твой профиль и что он значит в бою</a>
+    <a href="#mechanics">2. Как считается удар</a>
+    <a href="#position">3. Игра на позициях (атака/блок)</a>
+    <a href="#classes">4. Колесо классов и матчапы</a>
+    <a href="#techniques">5. Приёмы — когда что жать</a>
+    <a href="#stamina">6. Выносливость и пропуски хода</a>
+    <a href="#runes">7. Руны на турнире — что можно, что нет</a>
+    <a href="#rules">8. Регламент турнира</a>
+    <a href="#checklist">9. Чек-лист перед 23 числа</a>
+  </nav>
+
+  <section id="profile">
+    <h2><span class="num">1.</span>Твой профиль и что он значит в бою</h2>
+    <p class="section-sub">Топор = пара Крит + Антикрит. Это ударный, а не уклоняющийся класс: ты не должен пытаться никого не задеть — ты должен бить сильнее и чаще критовать, чем тебя критуют.</p>
+
+    <div class="stat-cards">
+      <div class="stat-card"><div class="k">Крит</div><div class="v axe">3592.84</div></div>
+      <div class="stat-card"><div class="k">Антикрит</div><div class="v axe">2828.73</div></div>
+      <div class="stat-card"><div class="k">Уворот</div><div class="v">418.65</div></div>
+      <div class="stat-card"><div class="k">Антиуворот</div><div class="v">1763.98</div></div>
+    </div>
+
+    <div class="callout good">
+      <strong>Сильная сторона:</strong> Крит и Антикрит — твои два самых высоких параметра, и это ровно то, что даёт класс Топор. Ты одновременно часто критуешь сам и редко пропускаешь крит от равного противника. Реальная статистика последнего боя это подтверждает: 90% попаданий, 14 из 27 ударов — криты, 0 уворотов пропущено на твою защиту.
+    </div>
+    <div class="callout warn">
+      <strong>Слабая сторона:</strong> Уворот (418.65) низкий — тебя будут регулярно задевать в ответ, это нормально для Топора и не стоит это чинить артефактом (ты уже пробовал считать это проблемой — не работает, потому что твой реальный затык был в другом, см. ниже). Компенсация не в уклонении, а в том, чтобы твой обмен уроном был выгоднее: больше крита, больше урона за размен.
+    </div>
+    <div class="callout">
+      <strong>Антиуворот 1763.98</strong> — средне-высокий за счёт Артефакта Древней Магии (не за счёт класса Топора, который его не усиливает напрямую). Это и есть причина, почему ты почти всегда попадаешь по уклоняющимся ботам в подземельях, и почему это же будет работать против Копейщиков/Мечников в турнире — просто не жди, что будет 100%, шанс попасть по уворотливому противнику зависит от разницы твоего Антиуворота и его Уворота, а не от абсолюта.
+    </div>
+  </section>
+
+  <section id="mechanics">
+    <h2><span class="num">2.</span>Как считается удар</h2>
+    <p class="section-sub">Из статьи «Поединок» — база, на которой строится вся тактика ниже.</p>
+
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Исход обмена</th><th>Условие</th><th>Урон</th></tr></thead>
+        <tbody>
+          <tr><td>Обычный удар</td><td>ни крит, ни уворот, ни блок</td><td class="num">база</td></tr>
+          <tr><td>Уворот</td><td>шанс растёт от (Уворот атакующего или защищающегося − противоположный Антипараметр противника)</td><td class="num">0</td></tr>
+          <tr><td>Критический удар</td><td>шанс растёт от (Крит − Антикрит противника)</td><td class="num">×2 от обычного</td></tr>
+          <tr><td>Блок</td><td>обе стороны выбрали одну позицию удара</td><td class="num">0</td></tr>
+          <tr><td>Пробитый блок</td><td>блок + одновременно крит</td><td class="num">как обычный удар (не ×2)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="section-sub">Реальный урон = случайное значение между твоим мин. и макс. уроном, минус половина брони противника в зоне удара (голова/корпус/руки/ноги — броня по зонам разная). Неполная выносливость ослабляет Урон, Броню, Крит и Уворот ещё до расчёта — держи бой коротким, если выносливость проседает.</p>
+
+    <div class="callout">
+      Важно: шанс крита/уворота — это разница твоего параметра и противоположного параметра противника, а не твоё абсолютное число. Один и тот же комплект будет «крутить» криты по-разному против разных противников — это нормально, не баг твоей сборки.
+    </div>
+  </section>
+
+  <section id="position">
+    <h2><span class="num">3.</span>Игра на позициях (атака/блок)</h2>
+    <p class="section-sub">Помимо крит/уворот-математики, у каждого обмена есть выбор позиции удара — это отдельный слой, где можно выигрывать чтением противника.</p>
+    <ul class="checklist">
+      <li>Атакующая позиция: +10% урона, но не даёт бонуса к защите.</li>
+      <li>Защитная позиция: +10% к броне на этот обмен.</li>
+      <li>Блок срабатывает, если противник поставил защиту/удар в ту же зону, что и ты — соответственно, угадывание зоны (голова/корпус/руки/ноги) держит инициативу.</li>
+      <li>Крит пробивает блок независимо от того, угадал ли противник зону — это ещё один довод в пользу твоей крит-ориентированной сборки: даже угаданный блок противника не спасает от крита.</li>
+      <li>Перед своим ходом смотри панель «данные о предыдущем обмене» — она показывает, куда бил противник в прошлый раз. Многие игроки бьют в одну и ту же зону по инерции — это твой самый дешёвый источник информации, используй его каждый ход.</li>
+    </ul>
+  </section>
+
+  <section id="classes">
+    <h2><span class="num">4.</span>Колесо классов и матчапы</h2>
+    <p class="section-sub">6 классов — это 6 пар из 4 базовых параметров. Понимание пар важнее самого «колеса» — оно объясняет, почему кто-то с тобой размен выигрывает или проигрывает.</p>
+
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Класс</th><th>Параметры</th><th>Играет от</th></tr></thead>
+        <tbody>
+          <tr><td><div class="class-name axe"><span class="dot"></span>Топор</div></td><td>Крит + Антикрит</td><td class="muted">твой размен урона максимальный, крит трудно пробить</td></tr>
+          <tr><td><div class="class-name knife"><span class="dot"></span>Нож</div></td><td>Крит + Уворот</td><td class="muted">бьёт больно и часто уклоняется — самый «взрывной» класс</td></tr>
+          <tr><td><div class="class-name club"><span class="dot"></span>Дубина</div></td><td>Антикрит + Антиуворот</td><td class="muted">чисто оборонительный — трудно докритовать и трудно попасть, если уклоняется</td></tr>
+          <tr><td><div class="class-name spear"><span class="dot"></span>Копьё</div></td><td>Антикрит + Уворот</td><td class="muted">гасит твои криты и при этом уклоняется</td></tr>
+          <tr><td><div class="class-name hammer"><span class="dot"></span>Молот</div></td><td>Крит + Антиуворот</td><td class="muted">бьёт больно и почти всегда попадает</td></tr>
+          <tr><td><div class="class-name sword"><span class="dot"></span>Меч</div></td><td>Уворот + Антиуворот</td><td class="muted">не про урон, про «не дать себя ударить и всегда достать сам»</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cycle-strip">
+      <span class="pill spear">Копьё</span><span class="arrow">бьёт</span>
+      <span class="pill axe">Топор</span><span class="arrow">бьёт</span>
+      <span class="pill hammer">Молот</span><span class="arrow">бьёт</span>
+      <span class="pill sword">Меч</span><span class="arrow">бьёт</span>
+      <span class="pill spear">Копьё</span>
+      <span class="arrow" style="margin-left:16px;">•</span>
+      <span class="pill club">Дубина</span><span class="arrow">бьёт</span>
+      <span class="pill knife">Нож</span>
+    </div>
+
+    <div class="callout">
+      <strong>Твой собственный вывод, который подтвердился:</strong> формальный «контр-класс» (Копьё) значит мало, когда почти все на 11 уровне играют Топором — зеркальный матчап Топор-vs-Топор решается качеством сборки/артефактов/заточки, а не классом. У тебя в этом зеркале статистика 932 победы / 0 поражений — менять класс ради теоретического контрпика Копья нет смысла, ты уже сильнее среднего Топора в лоб.
+    </div>
+
+    <h3 style="font-family:'Fraunces',serif; font-size:1rem; margin: 22px 0 12px;">Разбор по классам противника</h3>
+    <div class="matchup-grid">
+      <div class="matchup-card">
+        <span class="verdict easy">Выгодно</span>
+        <h4><span class="pill axe">Топор</span> зеркало</h4>
+        <p>Решает качество сборки/заточки/артефактов — у тебя тут преимущество. Играй стандартно, не меняй план под них.</p>
+      </div>
+      <div class="matchup-card">
+        <span class="verdict easy">Выгодно</span>
+        <h4><span class="pill sword">Меч</span></h4>
+        <p>У них нет крита вообще (пара Уворот+Антиуворот) — весь урон, который ты получишь, будет обычным, не ×2. Дави своим критом, это одна из самых комфортных встреч.</p>
+      </div>
+      <div class="matchup-card">
+        <span class="verdict even">Ровно</span>
+        <h4><span class="pill spear">Копьё</span></h4>
+        <p>Их Антикрит и Уворот работают именно против твоих сильных сторон. Твой Антиуворот (1763.98) обычно выше их Уворота — попадать будешь, но реже критовать пробьётся через их Антикрит. Береги приём «Агрессия» именно на этот матчап — он игнорирует их уворот и гарантирует крит.</p>
+      </div>
+      <div class="matchup-card">
+        <span class="verdict even">Ровно</span>
+        <h4><span class="pill hammer">Молот</span></h4>
+        <p>У них хороший Антиуворот — они тоже будут стабильно попадать. Взаимный размен «крит на крит», решает разница в абсолютных числах и броне. Держи выносливость — долгий разменный бой съедает её быстро.</p>
+      </div>
+      <div class="matchup-card">
+        <span class="verdict hard">Осторожно</span>
+        <h4><span class="pill knife">Нож</span></h4>
+        <p>Крит + Уворот — самый «взрывной» противник: может и увернуться, и закритовать. У тебя достаточно Антикрита и Антиуворота, чтобы держать оба риска под контролем, но именно тут размены самые нервные — не разменивайся впустую, экономь приёмы-модификаторы.</p>
+      </div>
+      <div class="matchup-card">
+        <span class="verdict hard">Долгий бой</span>
+        <h4><span class="pill club">Дубина</span></h4>
+        <p>Чисто оборонительный класс — их трудно закритовать и трудно поймать уворотом мимо. Бой превращается в размен «в долгую» на позиционной игре и сырых числах урона/брони. Не спеши, следи за пропусками хода — штраф по выносливости в турнире растёт с каждым пропуском.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="techniques">
+    <h2><span class="num">5.</span>Приёмы — когда что жать</h2>
+    <p class="section-sub">Приёмы «покупаются» типами ударов (крит, уворот, удачный удар и т.д. — это твоя «валюта» в бою), у части есть кулдаун и лимит использований за бой.</p>
+
+    <div class="callout good">
+      <strong>Агрессия — твой главный козырь.</strong> Гарантирует критический удар (или пробитый блок), полностью игнорируя уворот противника. Число применений за бой зависит от количества эффектов «Агрессия» в умениях (получаются от одноимённой руны и ачивки «Честь имею») — заряды ограничены, поэтому не жги их на слабых противниках. Приоритет: Копейщики и Мечники с высоким личным Уворотом, и любой момент, когда обычные размены не пробивают.
+    </div>
+
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Категория</th><th>Приёмы (из твоего списка)</th><th>Когда использовать</th></tr></thead>
+        <tbody>
+          <tr><td>Атака</td><td>Сокрушающий удар, Каменный Дождь, Мощный удар, Агрессия</td><td>основной источник урона сверх обычного размена</td></tr>
+          <tr><td>Защита</td><td>Полная защита, Активная защита</td><td>когда чувствуешь, что размен идёт не в твою пользу или нужно пересидеть выносливость</td></tr>
+          <tr><td>Модификаторы (+30% на 3 удара)</td><td>Удачная атака, Удачный уворот, Неотвратимость, Некритичность</td><td>копятся от соответствующего типа ударов — «Неотвратимость» особенно ценна, если по тебе не попадают: +30% к Антиуворот на 3 удара это прямой ответ на уклоняющегося противника</td></tr>
+          <tr><td>Жизнь/Выносливость</td><td>Собраться, Утереть пот, Дух Природы</td><td>восстановление между тяжёлыми обменами</td></tr>
+          <tr><td>Командные</td><td>Помочь ближнему</td><td>не актуально для турнира (все-против-всех, не команды)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout warn">
+      Ожидай, что противники тоже используют «Некритичность» (+30% Антикрит на 3 удара) как реакцию на твою крит-сборку. Твоя «Агрессия» гарантирует крит и не завязана на обычный ролл — по формулировке она бьёт через уворот в любом случае, так что не бойся жать её даже если подозреваешь, что у противника сейчас поднят Антикрит модификатором.
+    </div>
+  </section>
+
+  <section id="stamina">
+    <h2><span class="num">6.</span>Выносливость и пропуски хода</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Действие</th><th>Затраты выносливости</th></tr></thead>
+        <tbody>
+          <tr><td>Обычный удар / противник увернулся / блок / удар в блок</td><td class="num">1</td></tr>
+          <tr><td>Свой крит или свой уворот</td><td class="num">2</td></tr>
+          <tr><td>Пробитый блок противника</td><td class="num">4</td></tr>
+          <tr><td>Пропуск хода (обычный бой)</td><td class="num">10</td></tr>
+          <tr><td>Пропуск хода (Бои чести)</td><td class="num">5% (1–5 пропуск), затем 10%</td></tr>
+          <tr><td>Пропуск хода (Турнир)</td><td class="num">(число пропусков × 3)%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout bad">
+      В турнирном бою штраф за пропуск растёт с каждым пропуском (3-й пропуск = −9% выносливости разом). Никогда не давай бою уйти в тайм-аут по невнимательности — держи вкладку открытой в свои временные окна (11:00 / 15:00 / 19:00).
+    </div>
+  </section>
+
+  <section id="runes">
+    <h2><span class="num">7.</span>Руны на турнире — что можно, что нет</h2>
+    <ul class="checklist">
+      <li>Разрешены <strong>только</strong> специальные турнирные руны — покупаются в Турнирной лавке (Малые Торговые ряды) за монеты чести.</li>
+      <li>Обычные боевые руны (спасение, снятия, клонирование и т.д.) в турнире не действуют — все стандартные руны исключены.</li>
+      <li>Невидимость запрещена полностью — нельзя даже подать заявку в невидимости.</li>
+      <li>Призыв животных, хранителей, клонов и любых существ запрещён.</li>
+      <li>Турнирное «Спасение» (руна-воскрешение) восстанавливает только 50% уровня жизни — не рассчитывай на полный отхил после смерти в бою.</li>
+      <li>Камни можно ставить любые (магазинные и обычные) — при поражении в турнирном бою экипировка и камни не ломаются, так что можно смело ставить самый агрессивный крит-сет.</li>
+    </ul>
+    <div class="note warn" style="display:block; margin-top:14px;">Точный список турнирных рун в лавке я не смог посмотреть вживую (навигация до Малых Торговых рядов несколько раз сбрасывала сессию до логина). Монеты чести — 10 даются при регистрации на турнир, ещё зарабатываются за бои, покупаются в банке или за задание Капитана стражи «Секретный код». Когда лавка станет доступна на событии (с 23 числа), стоит зайти и посмотреть ассортимент — могу это сделать вместе с тобой.</div>
+  </section>
+
+  <section id="rules">
+    <h2><span class="num">8.</span>Регламент турнира — коротко</h2>
+    <ul class="checklist">
+      <li>Проходит с 23 по 26 число каждого месяца, 3 боя в день (11:00, 15:00, 19:00), все-против-всех, без команд.</li>
+      <li>Минимальная сила эффектов для 11 уровня — <strong>3.0</strong> (проверяется в Персонаж → Умения). Без этого в заявку не пустят.</li>
+      <li>Нужен полный комплект обмундирования и все 7 камней.</li>
+      <li>Награда за бой — 3 монеты чести, 1 бюллетень, +100% опыта на 6 часов — но только если нанёс хотя бы 1 единицу урона.</li>
+      <li>Во время турнира нельзя перейти с 11 на 12 уровень (и т.д.) — выйдешь с турнира той же группой, в которой вошёл.</li>
+      <li>Одному мульту-владельцу нельзя ставить двух персонажей в одну заявку.</li>
+      <li>Личные поручения турнира обновляются в 09:00 / 13:00 / 17:00 — забирай награду сразу, иначе слетит на новое поручение.</li>
+      <li>Есть отдельный рейтинг «Народные избранники» по бюллетеням — они живут 24 часа, не забывай их тратить (+5 сестерциев за штуку сразу).</li>
+    </ul>
+    <div class="callout">
+      Травмы (снижение крита/уворота/антикрита/антиуворота на 1–6 часов) прилетают от поражений в «нападении», «хаотичных боях» и боях, завершённых тайм-аутом — но не от дуэлей. Про турнирные бои отдельно это не оговорено как исключение, так что играй так, чтобы бой не уходил в тайм-аут — не рискуй лишний час-другим ради азарта.
+    </div>
+  </section>
+
+  <section id="checklist">
+    <h2><span class="num">9.</span>Чек-лист перед 23 числа</h2>
+    <ul class="checklist">
+      <li>Проверить силу эффектов ≥ 3.0 в Умениях — без этого заявку на бой не подать.</li>
+      <li>Добить заточку оружия и брони, пока переодевание/перековка дешёвые (как ты сам и планировал).</li>
+      <li>Определиться со сборкой камней (крит-сборка vs выживание — сравнение уже отправлено тебе отдельным файлом) и поставить её до старта турнира.</li>
+      <li>Проверить распределение очков в Артефакте Древней Магии — держать акцент на Крит/Антикрит/Антиуворот, он уже неплохо настроен.</li>
+      <li>Скопить/прикинуть монеты чести заранее — 10 дают при регистрации, плюс задание Капитана стражи «Секретный код».</li>
+      <li>Как только откроется Турнирная лавка — посмотреть ассортимент турнирных рун и купить то, что усиливает Крит/Антиуворот или даёт заряды «Агрессии».</li>
+      <li>В дни турнира — быть на месте к 11:00 / 15:00 / 19:00, не допускать пропусков хода и тайм-аутов.</li>
+    </ul>
+  </section>
+
+  <footer>
+    Собрано из статей вики «Поединок», «Приёмы», «Травмы», «Рыцарский турнир», «Классы персонажей», «Руны», из твоей страницы «Приёмы» в игре и из статистики реального боя (лог #86328974). Число к монетам чести/наградам может отличаться, если Utopie что-то обновит после сентябрьского патча от 13.09 — стоит свериться с игрой ближе к 23 числу.
+  </footer>
+
+</div>
